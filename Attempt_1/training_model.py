@@ -38,7 +38,7 @@ print(train_data)
 model = keras.models.Sequential([
     tf.keras.layers.LSTM(RNN_UNITS, return_sequences=True, stateful=True, recurrent_initializer="glorot_uniform"),
 
-    keras.layers.Dense(1)
+    keras.layers.Dense(1, activation=keras.activations.sigmoid)
 ])
 model.build(input_shape=(BATCH_SIZE, None, 1))
 
