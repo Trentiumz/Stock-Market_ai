@@ -63,7 +63,7 @@ for file in files:
     if len(total_significant) == 0:
         continue
     if total_significant[-1][0] != len(prices) - 1:
-        total_significant.append((len(prices) - 1, not total_significant[-1][1]))
+        total_significant.append((len(prices) - 1, int(not total_significant[-1][1])))
 
     # We fill it up with data detailing whether or not the next one is a rise or fall
     nexts = []
@@ -71,6 +71,7 @@ for file in files:
     for index, val in total_significant:
         nexts += [val] * (index - last)
         last = index
+    print(len(nexts) == len(prices))
 
     # Export this data into a dictionary
     info_holder[file] = (tuple(prices), tuple(nexts))
