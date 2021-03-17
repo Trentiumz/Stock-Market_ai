@@ -16,14 +16,25 @@ train_labels = []
 
 for file in files:
     with open(f"{DATA_PATH}{file}", "rt") as inp:
-        s = [x.split() for x in inp.readlines()]
+        s = [x.split() for x in inp.readlines() if "n" not in x.split()[0] and "n" not in x.split()[1]]
 
         features = [float(x[0]) for x in s]
         labels = [float(x[1]) for x in s]
         features = features[:EXAMPLE_BATCH_SIZE * int(len(features) / EXAMPLE_BATCH_SIZE)]
         labels = labels[:EXAMPLE_BATCH_SIZE * int(len(labels) / EXAMPLE_BATCH_SIZE)]
 
-        train_features += features
+        if len(features) == 0:
+            print(file)
+            continue
+
+        features -= np.min(features)
+        if np.max(features) - np.min(features) != 0:
+            features *= 1/(np.max(features) - np.min(features))
+        else:
+            features = [0.5] * len(features)
+
+
+        train_features += list(features)
         train_labels += labels
 
 train_features = np.array(train_features)
@@ -43,7 +54,7 @@ model = keras.models.Sequential([
 ])
 model.build(input_shape=(BATCH_SIZE, None, 1))
 
-model.compile(optimizer="adam", loss=keras.losses.binary_crossentropy)
+model.compile(optimizer="adam", loss=keras.losses.binary_crossentropy, metrics=["accuracy"])
 print(model.summary())
 
 history = model.fit(train_data, epochs=100)
